@@ -46,7 +46,16 @@ Columns in the raw dataset were renamed for consistency and readability. Example
 **Handling Missing or Incorrect Data**
 1. Specific entries with missing or incorrect data were updated manually based on their `ETER_ID`. For instance:
    - Adjusted URLs for entries like `FR0466` (updated to `https://www.clermont-auvergne-inp.fr/`).
+   - Adjusted URLs for entries like `FR0333` (updated to `www.icam.fr`)
+   - Adjusted URLs for entries like `FR0906` (updated to `epss.fr`)
+   - Adjusted URLs for entries like `FR0104` (updated to `www.ensa-nancy.fr`)
+   - Adjusted URLs for entries like `FR0466` (updated to `www.clermont-auvergne-inp.fr`)
+   - Adjusted URLs for entries like `FR0907` (updated to `insp.gouv.fr`) - This universety also changed your name for `Institut national du service public`
    - Removed entries such as `FR0129` and `FR0944` due to insufficient or invalid information.
+   - Removed FR0513 Institut supérieur européen de gestion Lyon because it's the same url and school of Paris, so remains only the main campus in Paris
+   - Remove FR0235 Institut supérieur de l'électronique et du numérique Toulon, because it's the same url of Institut supérieur de l'électronique et du numérique Lille, so remains only the main campus
+   - Remove FR0106 and FR010 École spéciale militaire, because it's the url returns 403 forbiden
+   - Remove FR0970 École nationale de la meteorologie  beucase of invalid HTTPS
 
 **Regional Data Integration**
 1. Merged NUTS 2016 and NUTS 2021 data to enrich the dataset with regional labels.
