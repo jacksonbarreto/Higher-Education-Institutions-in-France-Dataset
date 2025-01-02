@@ -24,37 +24,37 @@ The methodology for creating the dataset involved obtaining data from two source
 
 This section outlines the methodology used to create the dataset for Higher Education Institutions (HEIs) in France. The dataset consolidates information from various sources, processes the data, and enriches it to provide accurate and reliable insights.
 
-## Data Sources
+**Data Sources**
 1. **ETER Database**: The primary dataset was sourced from the ETER database, containing detailed information about HEIs in Europe.
    - File: `eter-export-2021-FR.xlsx`
 2. **Eurostat NUTS Data**: Two datasets from Eurostat were used for regional information:
    - NUTS 2013-2016 regions: `NUTS2013-NUTS2016.xlsx`
    - NUTS 2021 regions: `NUTS2021.xlsx`
 
-## Data Cleaning and Preprocessing
-### Column Renaming
+**Data Cleaning and Preprocessing**
+**Column Renaming**
 Columns in the raw dataset were renamed for consistency and readability. Examples include:
 - `ETER ID` → `ETER_ID`
 - `Institution Name` → `Name`
 - `Legal status` → `Category`
 
-### Value Replacement
+**Value Replacement**
 1. **HEI Categories**: The `Category` column was cleaned, with government-dependent institutions classified as "public."
 2. **Standardized Institution Categories**: Mapped numerical values to descriptive labels such as "University" and "University of applied sciences."
 3. **European University Alliance Membership**: Replaced binary values with "Yes" or "No."
 
-### Handling Missing or Incorrect Data
+**Handling Missing or Incorrect Data**
 1. Specific entries with missing or incorrect data were updated manually based on their `ETER_ID`. For instance:
    - Adjusted URLs for entries like `FR0466` (updated to `https://www.clermont-auvergne-inp.fr/`).
    - Removed entries such as `FR0129` and `FR0944` due to insufficient or invalid information.
 
-### Regional Data Integration
+**Regional Data Integration**
 1. Merged NUTS 2016 and NUTS 2021 data to enrich the dataset with regional labels.
 
-## Final Dataset
+**Final Dataset**
 The final dataset was saved as a CSV file: `france-heis.csv`, encoded in UTF-8 for compatibility. It includes detailed information about HEIs in France, their categories, regional affiliations, and membership in European alliances.
 
-## Summary
+**Summary**
 This methodology ensures that the dataset is accurate, consistent, and enriched with valuable regional and institutional details. The final dataset is intended to serve as a reliable resource for analyzing French HEIs.
 
 ## Usage
