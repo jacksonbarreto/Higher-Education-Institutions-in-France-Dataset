@@ -1,7 +1,6 @@
 import pandas as pd
-import requests
 
-# import eter-export-2021-FR.xlsx
+# Import eter-export-2021-FR.xlsx
 df = pd.read_excel('eter-export-2021-FR.xlsx')
 
 # Replace column 'ETER ID' column
@@ -28,13 +27,11 @@ df.rename(columns={'Region of establishment (NUTS 2)': 'NUTS2'}, inplace=True)
 # Replace column 'Region of establishment (NUTS 3)' column
 df.rename(columns={'Region of establishment (NUTS 3)': 'NUTS3'}, inplace=True)
 
-# Replace values ​​in 'category' column
-# OBS: government dependent we will assume as public
+# Replace values ​​in 'Category' column
 category_replaces = {0: 'public', 1: 'private', 2: 'public'}
 df['Category'] = df['Category'].replace(category_replaces)
 
 # Replace null values for specific ETER IDs and columns
-# Use separate assignments for each column to avoid the TypeError
 for eter_id, category, institutions_category_standardized_replaces in [
     ('FR0343', 'public', 2),
     ('FR0344', 'private', 2),
@@ -61,11 +58,8 @@ df['Institution_Category_Standardized'] = df['Institution_Category_Standardized'
 
 # Replace the value in the 'Member of European University alliance' column
 member_of_European_University_alliance_replaces = {0: 'No', 1: 'Yes'}
-
 df['Member_of_European_University_alliance'] = df['Member_of_European_University_alliance'].replace(member_of_European_University_alliance_replaces)
 
-# Import NUTS2013-NUTS2016.xlsx and select the right sheet
-# Source: https://ec.europa.eu/eurostat/documents/345175/629341/NUTS2013-NUTS2016.xlsx
 # Import NUTS2013-NUTS2016.xlsx and select the right sheet
 dfNuts16Raw = pd.read_excel('NUTS2013-NUTS2016.xlsx', sheet_name='NUTS2013-NUTS2016', header=1)
 
@@ -84,8 +78,8 @@ dfNuts3_2016.rename(columns={
 }, inplace=True)
 
 # Merge df with NUTS2 and NUTS3 for 2016
-dfMerged = pd.merge(df, dfNuts2_2016, on='NUTS2', how='left')
-dfMerged = pd.merge(dfMerged, dfNuts3_2016, on='NUTS3', how='left')
+df = pd.merge(df, dfNuts2_2016, on='NUTS2', how='left')
+df = pd.merge(df, dfNuts3_2016, on='NUTS3', how='left')
 
 # Import NUTS2021.xlsx
 dfNuts21Raw = pd.read_excel('NUTS2021.xlsx', sheet_name='NUTS & SR 2021')
@@ -105,8 +99,8 @@ dfNuts3_2021.rename(columns={
 }, inplace=True)
 
 # Merge df with NUTS2 and NUTS3 for 2021
-dfMerged = pd.merge(dfMerged, dfNuts2_2021, on='NUTS2', how='left')
-dfMerged = pd.merge(dfMerged, dfNuts3_2021, on='NUTS3', how='left')
+df = pd.merge(df, dfNuts2_2021, on='NUTS2', how='left')
+df = pd.merge(df, dfNuts3_2021, on='NUTS3', how='left')
 
 # Arrange NUTS related columns in desired order
 nuts_columns = [
@@ -115,13 +109,13 @@ nuts_columns = [
 ]
 
 # Find columns that already exist in the DataFrame
-existing_nuts_columns = [col for col in nuts_columns if col in dfMerged.columns]
+existing_nuts_columns = [col for col in nuts_columns if col in df.columns]
 
 # Determine the position where NUTS columns should be inserted (after 'Url')
-insertion_point = dfMerged.columns.get_loc('Url') + 1
+insertion_point = df.columns.get_loc('Url') + 1
 
 # Get remaining columns without duplicating or changing original order
-remaining_columns = [col for col in dfMerged.columns if col not in existing_nuts_columns]
+remaining_columns = [col for col in df.columns if col not in existing_nuts_columns]
 
 # Insert NUTS columns in desired position
 new_column_order = (
@@ -131,33 +125,94 @@ new_column_order = (
 )
 
 # Reorganize DataFrame with new column order
-dfMerged = dfMerged[new_column_order]
+df = df[new_column_order]
 
-# Enrichment
+##### Sanatize #####
+
+# Remove White spaces
+df['Url'] = df['Url'].str.strip()
+
+# Remove the http and https from url
+df['Url'] = df['Url'].str.replace(r'^https?://', '', regex=True)
+
+# Remove the third bar from the url
+df['Url'] = df['Url'].str.replace(r'/.*', '', regex=True)
+
+##### Enrichment #####
 
 # Remove FR0129 Institut polytechnique LaSalle Beauvais
 # Because this polytechnique belongs to University LaSalle
+df = df[df['ETER_ID'] != 'FR0129']
 
-# Remove the line with ETER_ID:'FR0129'
-dfMerged = dfMerged[dfMerged['ETER_ID'] != 'FR0129']
 
-# Reset the index (to avoid broken index)
-dfMerged = dfMerged.reset_index(drop=True)
 
 # Remove FR0944 École nationale des impôts
 # Because was not possible to find an url
+df = df[df['ETER_ID'] != 'FR0944']
 
-# Remove the line with ETER_ID:'FR0944'
-dfMerged = dfMerged[dfMerged['ETER_ID'] != 'FR0944']
-# Reset the index (to avoid broken index)
-dfMerged = dfMerged.reset_index(drop=True)
 
-# Change url of FR0466 Institut national polytechnique Clermont-Auvergne
-# Because the url war wrong
-df.loc[df['ETER_ID'] == 'FR0466', 'Url'] = 'https://www.clermont-auvergne-inp.fr/'
 
-# saving data on CSV file
-file_name = 'france-heis.csv'
-dfMerged.to_csv(file_name, index=False, encoding='utf-8')
+# Remove FR0513 Institut supérieur européen de gestion Lyon
+# Because it's the same url and school, so remains only the main campus in Paris
+df = df[df['ETER_ID'] != 'FR0513']
 
-print(f"\nFile '{file_name}' salved with success!")
+
+
+# Remove FR0138 VetAgro Sup Lempdes
+# Because it's the same url and school, so remains only the main campus in  Marcy-l'Étoile
+df = df[df['ETER_ID'] != 'FR0138']
+
+
+
+# Remove FR0816 Comue Université Paris-Lumière
+# Because was closed in 12/2023
+df = df[df['ETER_ID'] != 'FR0816']
+
+
+
+# Remove FR0235 Institut supérieur de l'électronique et du numérique Toulon
+# Because it's the same url of Institut supérieur de l'électronique et du numérique Lille, so remains only the main campus
+df = df[df['ETER_ID'] != 'FR0235']
+
+df = df.reset_index(drop=True)
+
+# Remove FR0106 École spéciale militaire de Saint-Cyr
+# Because it's the url returns 403 forbiden
+df = df[df['ETER_ID'] != 'FR0106']
+# Reset the index
+df = df.reset_index(drop=True)
+
+# Remove FR0107 École militaire interarmes
+# Because it's the same url and school and the same campus and city, so remains only the École spéciale militaire de Saint-Cyr and url returns 403 forbiden
+df = df[df['ETER_ID'] != 'FR0107']
+
+# Remove FR0970 École nationale de la meteorologie Invalid HTTPS
+df = df[df['ETER_ID'] != 'FR0970']
+
+# Reset the index
+df = df.reset_index(drop=True)
+
+# Change URL of FR0333 École catholique d'arts et métiers Strasbourg-Europe
+# The Past url was wrong
+df.loc[df['ETER_ID'] == 'FR0333', 'Url'] = 'www.icam.fr'
+
+# Change URL of FR0906 Ecole pratique du service social
+# The Past url was wrong
+df.loc[df['ETER_ID'] == 'FR0906', 'Url'] = 'epss.fr'
+
+# Change URL of FR0104 Escola superior nacional darquitetura da Nancy
+# The Past url was wrong
+df.loc[df['ETER_ID'] == 'FR0104', 'Url'] = 'www.ensa-nancy.fr'
+
+# Change URL of FR0466 Institut national polytechnique Clermont-Auvergne
+# The Past url was wrong
+df.loc[df['ETER_ID'] == 'FR0466', 'Url'] = 'www.clermont-auvergne-inp.fr'
+
+# Change URL of FR0907 Ecole Nationale d'Administration
+# This Ecole change your name and url, because in 31/12/2021 the
+# L'École nationale d'administration (ENA) was close
+# Changed for Institut national du service public (INSP) in 01/01/2022
+df.loc[df['ETER_ID'] == 'FR0907', ['Url', 'Name']] = ['insp.gouv.fr', 'Institut national du service public']
+
+# Save data to CSV file
+df.to_csv('france-heis.csv', index=False, encoding='utf-8')
