@@ -45,7 +45,6 @@ Columns in the raw dataset were renamed for consistency and readability. Example
 
 **Handling Missing or Incorrect Data**
 1. Specific entries with missing or incorrect data were updated manually based on their `ETER_ID`. For instance:
-   - Adjusted URLs for entries like `FR0466` (updated to `https://www.clermont-auvergne-inp.fr/`).
    - Adjusted URLs for entries like `FR0333` (updated to `www.icam.fr`)
    - Adjusted URLs for entries like `FR0906` (updated to `epss.fr`)
    - Adjusted URLs for entries like `FR0104` (updated to `www.ensa-nancy.fr`)
