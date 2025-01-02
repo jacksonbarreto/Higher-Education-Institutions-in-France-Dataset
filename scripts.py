@@ -138,8 +138,6 @@ df['Url'] = df['Url'].str.replace(r'^https?://', '', regex=True)
 # Remove the third bar from the url
 df['Url'] = df['Url'].str.replace(r'/.*', '', regex=True)
 
-##### Enrichment #####
-
 # Remove FR0129 Institut polytechnique LaSalle Beauvais
 # Because this polytechnique belongs to University LaSalle
 df = df[df['ETER_ID'] != 'FR0129']
@@ -191,6 +189,8 @@ df = df[df['ETER_ID'] != 'FR0970']
 
 # Reset the index
 df = df.reset_index(drop=True)
+
+##### Enrichment #####
 
 # Change URL of FR0333 École catholique d'arts et métiers Strasbourg-Europe
 # The Past url was wrong
