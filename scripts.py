@@ -176,25 +176,21 @@ df = df[df['ETER_ID'] != 'FR0235']
 
 df = df.reset_index(drop=True)
 
-# FORBIDEN * CHECK LATER
 # Remove FR0106 École spéciale militaire de Saint-Cyr
 # Because it's the url returns 403 forbiden
-# df = df[df['ETER_ID'] != 'FR0106']
+df = df[df['ETER_ID'] != 'FR0106']
 # Reset the index
-# df = df.reset_index(drop=True)
+df = df.reset_index(drop=True)
 
 # Remove FR0107 École militaire interarmes
-# Because it's the same url and school and the same campus and city, so remains only the École spéciale militaire de Saint-Cyr
-# df = df[df['ETER_ID'] != 'FR0107']
-# Reset the index
-# df = df.reset_index(drop=True)
+# Because it's the same url and school and the same campus and city, so remains only the École spéciale militaire de Saint-Cyr and url returns 403 forbiden
+df = df[df['ETER_ID'] != 'FR0107']
 
-# DNS PROBLEM * CHECK LATER
-# Remove FR0883 Institut national des sciences et techniques nucléaires
-# Because it's the url returns DNS_PROBE_POSSIBLE
-# df = df[df['ETER_ID'] != 'FR0106']
+# Remove FR0970 École nationale de la meteorologie Invalid HTTPS
+df = df[df['ETER_ID'] != 'FR0970']
+
 # Reset the index
-# df = df.reset_index(drop=True)
+df = df.reset_index(drop=True)
 
 # Change URL of FR0333 École catholique d'arts et métiers Strasbourg-Europe
 # The Past url was wrong
@@ -217,9 +213,6 @@ df.loc[df['ETER_ID'] == 'FR0466', 'Url'] = 'www.clermont-auvergne-inp.fr'
 # L'École nationale d'administration (ENA) was close
 # Changed for Institut national du service public (INSP) in 01/01/2022
 df.loc[df['ETER_ID'] == 'FR0907', ['Url', 'Name']] = ['insp.gouv.fr', 'Institut national du service public']
-
-# Invalid HTTPS
-# CHECK LATER FR0970 École nationale de la meteorologie
 
 # Save data to CSV file
 df.to_csv('france-heis.csv', index=False, encoding='utf-8')
