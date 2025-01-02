@@ -69,6 +69,18 @@ df['Member_of_European_University_alliance'] = df['Member_of_European_University
 # Import NUTS2013-NUTS2016.xlsx and select the right sheet
 dfNuts16Raw = pd.read_excel('NUTS2013-NUTS2016.xlsx', sheet_name='NUTS2013-NUTS2016', header=1)
 
+# Remove http and https and everything after first / of the url
+def clean_url(url):
+    if pd.isna(url):
+        return url
+    # Remover https:// e http://
+    url = url.replace("https://", "").replace("http://", "")
+    # Capturar a parte até o primeiro '/'
+    url = url.split('/')[0]
+    return url
+
+df['Url'] = df['Url'].apply(clean_url)
+
 # Create NUTS2 mapping DataFrame for 2016
 dfNuts2_2016 = dfNuts16Raw[['Code 2016', 'NUTS level 2']].copy()
 dfNuts2_2016.rename(columns={
