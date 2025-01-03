@@ -127,6 +127,30 @@ new_column_order = (
 # Reorganize DataFrame with new column order
 df = df[new_column_order]
 
+def check_duplicates_url(df, coluna_url='Url'):    
+    def extract_domain_without_www(url):
+        try:
+            url = re.sub(r'www\.', '', url)
+            domain = url.split('/')[0]
+            return domain
+        except:
+            return None
+
+    df['domain_without_www'] = df[coluna_url].apply(extract_domain_without_www)
+
+    duplicateds = df[df.duplicated(subset=['domain_without_www'], keep=False)].dropna(subset=['domain_without_www'])
+
+    if duplicateds.empty:
+        print("No duplicate URLs were found (after removing 'www').")
+    else:
+        print("Duplicate URLs found (after removing 'www'):")
+        print(duplicateds[[coluna_url, 'domain_without_www','ETER_ID']])
+
+        domains_duplicateds = duplicateds['domain_without_www'].unique()
+        print("\nUnique duplicate domains:\n", domains_duplicateds)
+
+check_duplicates_url(df)
+
 ##### Sanatize #####
 
 # Remove White spaces
@@ -142,31 +166,29 @@ df['Url'] = df['Url'].str.replace(r'/.*', '', regex=True)
 # Because this polytechnique belongs to University LaSalle
 df = df[df['ETER_ID'] != 'FR0129']
 
-
+# Remove FR0503 Ecole de Commerce Tours
+# Because this polytechnique belongs to Ecole de Commmerce Montpellier
+df = df[df['ETER_ID'] != 'FR0503']
 
 # Remove FR0944 École nationale des impôts
 # Because was not possible to find an url
 df = df[df['ETER_ID'] != 'FR0944']
 
-
+# Remove FR0819 Université de recherche Paris sciences et lettres
+# Because this polytechnique is the same of Université Paris sciences et lettres [FR0468]
+df = df[df['ETER_ID'] != 'FR0819']
 
 # Remove FR0513 Institut supérieur européen de gestion Lyon
 # Because it's the same url and school, so remains only the main campus in Paris
 df = df[df['ETER_ID'] != 'FR0513']
 
-
-
 # Remove FR0138 VetAgro Sup Lempdes
 # Because it's the same url and school, so remains only the main campus in  Marcy-l'Étoile
 df = df[df['ETER_ID'] != 'FR0138']
 
-
-
 # Remove FR0816 Comue Université Paris-Lumière
 # Because was closed in 12/2023
 df = df[df['ETER_ID'] != 'FR0816']
-
-
 
 # Remove FR0235 Institut supérieur de l'électronique et du numérique Toulon
 # Because it's the same url of Institut supérieur de l'électronique et du numérique Lille, so remains only the main campus
@@ -200,13 +222,25 @@ df.loc[df['ETER_ID'] == 'FR0333', 'Url'] = 'www.icam.fr'
 # The Past url was wrong
 df.loc[df['ETER_ID'] == 'FR0906', 'Url'] = 'epss.fr'
 
-# Change URL of FR0104 Escola superior nacional darquitetura da Nancy
-# The Past url was wrong
-df.loc[df['ETER_ID'] == 'FR0104', 'Url'] = 'www.ensa-nancy.fr'
-
 # Change URL of FR0466 Institut national polytechnique Clermont-Auvergne
 # The Past url was wrong
 df.loc[df['ETER_ID'] == 'FR0466', 'Url'] = 'www.clermont-auvergne-inp.fr'
+
+# Change URL of FR0199 École nationale supérieure des mines de Paris
+# The Past url was wrong
+df.loc[df['ETER_ID'] == 'FR0199', 'Url'] = 'www.minesparis.psl.eu'
+
+# Change URL of FR0091 École supérieure du bois
+# The Past url was wrong
+df.loc[df['ETER_ID'] == 'FR0091', 'Url'] = 'www.esb-campus.fr'
+
+# Change URL of FR0883 Institut national des sciences et techniques nucléaires
+# The Past url was wrong
+df.loc[df['ETER_ID'] == 'FR0883', 'Url'] = 'instn.cea.fr'
+
+# Change URL of FR0104 École nationale supérieure d'art de Nancy
+# The Past url was wrong
+df.loc[df['ETER_ID'] == 'FR0104', 'Url'] = 'ensad-nancy.eu'
 
 # Change URL of FR0907 Ecole Nationale d'Administration
 # This Ecole change your name and url, because in 31/12/2021 the
