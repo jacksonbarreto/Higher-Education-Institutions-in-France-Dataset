@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 # Import eter-export-2021-FR.xlsx
 df = pd.read_excel('eter-export-2021-FR.xlsx')
@@ -127,7 +128,22 @@ new_column_order = (
 # Reorganize DataFrame with new column order
 df = df[new_column_order]
 
-def check_duplicates_url(df, coluna_url='Url'):    
+##### Sanatize #####
+
+# Remove White spaces
+df['Url'] = df['Url'].str.strip()
+
+# Remove the http and https from url
+df['Url'] = df['Url'].str.replace(r'^https?://', '', regex=True)
+
+# Remove the third bar from the url
+df['Url'] = df['Url'].str.replace(r'/.*', '', regex=True)
+
+# verifiy duplicate url
+
+# verifiy duplicate url
+
+def check_duplicates_url(df, coluna_url='Url'):
     def extract_domain_without_www(url):
         try:
             url = re.sub(r'www\.', '', url)
@@ -151,16 +167,7 @@ def check_duplicates_url(df, coluna_url='Url'):
 
 check_duplicates_url(df)
 
-##### Sanatize #####
-
-# Remove White spaces
-df['Url'] = df['Url'].str.strip()
-
-# Remove the http and https from url
-df['Url'] = df['Url'].str.replace(r'^https?://', '', regex=True)
-
-# Remove the third bar from the url
-df['Url'] = df['Url'].str.replace(r'/.*', '', regex=True)
+##### Enrichment #####
 
 # Remove FR0129 Institut polytechnique LaSalle Beauvais
 # Because this polytechnique belongs to University LaSalle
@@ -198,7 +205,7 @@ df = df.reset_index(drop=True)
 
 # Remove FR0106 École spéciale militaire de Saint-Cyr
 # Because it's the url returns 403 forbiden
-df = df[df['ETER_ID'] != 'FR0106']
+# df = df[df['ETER_ID'] != 'FR0106']
 # Reset the index
 df = df.reset_index(drop=True)
 
@@ -206,13 +213,11 @@ df = df.reset_index(drop=True)
 # Because it's the same url and school and the same campus and city, so remains only the École spéciale militaire de Saint-Cyr and url returns 403 forbiden
 df = df[df['ETER_ID'] != 'FR0107']
 
-# Remove FR0970 École nationale de la meteorologie Invalid HTTPS
-df = df[df['ETER_ID'] != 'FR0970']
+# Remove FR0970 École nationale de la meteorologie 404 not found
+# df = df[df['ETER_ID'] != 'FR0970']
 
 # Reset the index
 df = df.reset_index(drop=True)
-
-##### Enrichment #####
 
 # Change URL of FR0333 École catholique d'arts et métiers Strasbourg-Europe
 # The Past url was wrong
