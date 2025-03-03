@@ -1,4 +1,4 @@
-# Higher-Education-Institutions-in-France-Dataset
+# Higher Education Institutions in France Dataset
 
 This repository contains a dataset of higher education institutions in France. This includes 349 higher education institutions in France, including universities,  universities of applied sciences and Higher Institutes as Higher Institute of Engineering, Higher Institute of biotechnologies and few others. This dataset was compiled in response to a cybersecurity investigation of France higher education institutions' websites [1]. The data is being made publicly available to promote open science principles [2].
 
